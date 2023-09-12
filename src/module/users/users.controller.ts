@@ -1,34 +1,77 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  NotFoundException,
+  ConflictException,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { UserService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto'; // Import User DTOs
+import { UpdateUserDto } from './dto/update-user.dto'; // Import User DTOs
 
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.userService.findAll();
+    return users;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findById(@Param('id') id: number) {
+    try {
+      const user = await this.userService.findById(id);
+      return user;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Get('email/:email')
+  async findByEmail(@Param('email') email: string) {
+    try {
+      const user = await this.userService.findByEmail(email);
+      return user;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  @Post()
+  async create(@Body() createUserDto: CreateUserDto) {
+    try {
+      const user = await this.userService.create(createUserDto);
+      return user;
+    } catch (error) {
+      throw new ConflictException(error.message);
+    }
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.userService.update(id, updateUserDto);
+      return user;
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') id: number) {
+    try {
+      await this.userService.delete(id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 }
