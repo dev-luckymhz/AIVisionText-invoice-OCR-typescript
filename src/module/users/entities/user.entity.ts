@@ -6,7 +6,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  BeforeInsert,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 // Import any other related entities or decorators here
 
@@ -43,4 +45,10 @@ export class User extends BaseEntity {
   // notifications: Notification[];
 
   // Add more relationships as needed
+
+  // Add a BeforeInsert hook to hash the password before insertion
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10); // Hash the password with a salt factor of 10
+  }
 }

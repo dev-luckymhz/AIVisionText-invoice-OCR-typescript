@@ -30,7 +30,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto, @Res({ passthrough: true }) response: Response) {
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     try {
       const user = await this.authService.validateUser(loginUserDto);
       if (!user) {

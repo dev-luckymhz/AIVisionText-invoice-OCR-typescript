@@ -1,15 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
   Body,
-  NotFoundException,
   ConflictException,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { UserService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create-user.dto'; // Import User DTOs
@@ -21,15 +21,13 @@ export class UserController {
 
   @Get()
   async findAll() {
-    const users = await this.userService.findAll();
-    return users;
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   async findById(@Param('id') id: number) {
     try {
-      const user = await this.userService.findById(id);
-      return user;
+      return await this.userService.findById(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -38,8 +36,7 @@ export class UserController {
   @Get('email/:email')
   async findByEmail(@Param('email') email: string) {
     try {
-      const user = await this.userService.findByEmail(email);
-      return user;
+      return await this.userService.findByEmail(email);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -48,8 +45,7 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      const user = await this.userService.create(createUserDto);
-      return user;
+      return await this.userService.create(createUserDto);
     } catch (error) {
       throw new ConflictException(error.message);
     }
@@ -58,8 +54,7 @@ export class UserController {
   @Put(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     try {
-      const user = await this.userService.update(id, updateUserDto);
-      return user;
+      return await this.userService.update(id, updateUserDto);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
