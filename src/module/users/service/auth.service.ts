@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './users.service';
 import { LoginUserDto } from '../dto/login-user.dto';
@@ -38,5 +38,23 @@ export class AuthService {
 
     // Generate and sign a JWT token with the payload
     return this.jwtService.sign(payload);
+  }
+
+  async getAuthenticatedUser(userId: number) {
+    try {
+      return await this.userService.findById(userId);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+  }
+
+  async changePassword(userId: number, newPassword: string) {
+    try {
+      const user = await this.userService.findById(userId);
+      user.password = await bcrypt.hash(newPassword, 10);
+      await this.userService.update(userId, user);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
   }
 }
