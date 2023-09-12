@@ -7,8 +7,10 @@ import {
   UpdateDateColumn,
   BaseEntity,
   BeforeInsert,
+  ManyToOne,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserRole } from './user-role.entity';
 
 // Import any other related entities or decorators here
 
@@ -26,6 +28,9 @@ export class User extends BaseEntity {
   @Column()
   password: string; // Note: Password should be hashed and stored securely
 
+  @ManyToOne(() => UserRole, (role) => role.users)
+  role: UserRole; // Define the relationship with UserRole
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
@@ -34,17 +39,11 @@ export class User extends BaseEntity {
 
   // Define relationships with other entities here
 
-  // Example of a one-to-many relationship with documents
-  // Uncomment and customize as needed
   // @OneToMany(() => Document, (document) => document.user)
   // documents: Document[];
 
-  // Example of a one-to-many relationship with notifications
-  // Uncomment and customize as needed
   // @OneToMany(() => Notification, (notification) => notification.user)
   // notifications: Notification[];
-
-  // Add more relationships as needed
 
   // Add a BeforeInsert hook to hash the password before insertion
   @BeforeInsert()
