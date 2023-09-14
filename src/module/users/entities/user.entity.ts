@@ -8,9 +8,11 @@ import {
   BaseEntity,
   BeforeInsert,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user-role.entity';
+import { DocumentModel } from '../../document-model/entities/document-model.entity';
 
 // Import any other related entities or decorators here
 
@@ -39,8 +41,8 @@ export class User extends BaseEntity {
 
   // Define relationships with other entities here
 
-  // @OneToMany(() => Document, (document) => document.user)
-  // documents: Document[];
+  @OneToMany(() => DocumentModel, (document) => document.user)
+  documents: DocumentModel[];
 
   // @OneToMany(() => Notification, (notification) => notification.user)
   // notifications: Notification[];

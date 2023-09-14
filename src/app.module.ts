@@ -8,6 +8,7 @@ import configuration from '../config/config';
 import { User } from './module/users/entities/user.entity';
 import { UserRole } from './module/users/entities/user-role.entity';
 import { DocumentModelModule } from './module/document-model/document-model.module';
+import { DocumentModel } from './module/document-model/entities/document-model.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { DocumentModelModule } from './module/document-model/document-model.modu
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, UserRole],
+      entities: [User, UserRole, DocumentModel],
       synchronize: true,
     }),
     UsersModule,
