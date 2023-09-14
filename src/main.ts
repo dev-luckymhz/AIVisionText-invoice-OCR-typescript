@@ -4,23 +4,9 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
-import fs from 'fs';
-import path from 'path';
-import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const ssl = process.env.SSL === 'true';
-  let httpsOptions = null;
-  if (ssl) {
-    const keyPath = process.env.SSL_KEY_PATH || '';
-    const certPath = process.env.SSL_CERT_PATH || '';
-    httpsOptions = {
-      key: fs.readFileSync(path.join(__dirname, keyPath)),
-      cert: fs.readFileSync(path.join(__dirname, certPath)),
-    };
-  }
-
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
   app.use(bodyParser.json({ limit: '10000mb' }));
@@ -50,16 +36,9 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
 
-  const hostname = process.env.HOSTNAME || 'localhost';
-  const port = Number(process.env.PORT) || 3000;
-
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(port, hostname, () => {
-    const address =
-      'http' + (ssl ? 's' : '') + '://' + hostname + ':' + port + '/';
-    Logger.log('Listening at ' + address);
-  });
+  await app.listen(3000);
 }
 bootstrap();

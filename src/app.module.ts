@@ -7,6 +7,7 @@ import { UsersModule } from './module/users/users.module';
 import configuration from '../config/config';
 import { User } from './module/users/entities/user.entity';
 import { UserRole } from './module/users/entities/user-role.entity';
+import { DocumentModelModule } from './module/document-model/document-model.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserRole } from './module/users/entities/user-role.entity';
       synchronize: true,
     }),
     UsersModule,
+    DocumentModelModule,
   ],
   controllers: [AppController],
   providers: [AppService],

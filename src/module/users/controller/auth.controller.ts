@@ -1,11 +1,11 @@
 import {
-  Controller,
-  Post,
   Body,
-  UnauthorizedException,
-  Res,
-  Req,
+  Controller,
   Get,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express'; // Import the Response object
 import { UserService } from '../service/users.service';
@@ -58,8 +58,7 @@ export class AuthController {
   async getAuthenticatedUser(@Req() request: Request) {
     try {
       const userId = request['user'].sub; // Extract user ID from the JWT payload
-      const user = await this.authService.getAuthenticatedUser(userId);
-      return user;
+      return await this.authService.getAuthenticatedUser(userId);
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
