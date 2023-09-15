@@ -10,6 +10,7 @@ import { UserRole } from './module/users/entities/user-role.entity';
 import { DocumentModelModule } from './module/document-model/document-model.module';
 import { DocumentModel } from './module/document-model/entities/document-model.entity';
 import { ExtractedDataModule } from './module/extracted-data/extracted-data.module';
+import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { ExtractedDataModule } from './module/extracted-data/extracted-data.modu
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, UserRole, DocumentModel],
+      entities: [User, UserRole, DocumentModel, ExtractedDatum],
       synchronize: true,
     }),
     UsersModule,

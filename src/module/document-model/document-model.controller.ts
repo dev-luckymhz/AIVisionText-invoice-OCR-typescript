@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  NestInterceptor,
   Param,
   Patch,
   Post,
@@ -22,7 +21,7 @@ export class DocumentModelController {
   constructor(private readonly documentModelService: DocumentModelService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file') as NestInterceptor)
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file,
     @Body() createDocumentModelDto: CreateDocumentModelDto,

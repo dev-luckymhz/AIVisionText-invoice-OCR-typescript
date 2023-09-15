@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ExtractedData } from './entities/extracted-datum.entity'; // Import the ExtractedData entity
+import { ExtractedDatum } from './entities/extracted-datum.entity'; // Import the ExtractedData entity
 import { CreateExtractedDatumDto } from './dto/create-extracted-datum.dto';
 import { UpdateExtractedDatumDto } from './dto/update-extracted-datum.dto';
 
 @Injectable()
 export class ExtractedDataService {
   constructor(
-    @InjectRepository(ExtractedData)
-    private readonly extractedDataRepository: Repository<ExtractedData>,
+    @InjectRepository(ExtractedDatum)
+    private readonly extractedDataRepository: Repository<ExtractedDatum>,
   ) {}
 
   async create(createExtractedDataDto: CreateExtractedDatumDto) {

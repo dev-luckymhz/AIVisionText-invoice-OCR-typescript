@@ -8,12 +8,12 @@ import {
 import { DocumentModel } from '../../document-model/entities/document-model.entity'; // Import the Document entity
 
 @Entity()
-export class ExtractedData extends BaseEntity {
+export class ExtractedDatum extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => DocumentModel, (document) => document.extractedData)
-  document: DocumentModel;
+  documentModel: DocumentModel;
 
   @Column({ nullable: true })
   vendorName: string;
