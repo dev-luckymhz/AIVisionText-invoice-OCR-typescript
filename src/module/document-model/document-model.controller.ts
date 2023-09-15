@@ -1,35 +1,33 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  NestInterceptor,
+  Param,
+  Patch,
+  Post,
+  Res,
   UploadedFile,
   UseInterceptors,
-  Res,
 } from '@nestjs/common';
 import { DocumentModelService } from './document-model.service';
 import { CreateDocumentModelDto } from './dto/create-document-model.dto';
 import { UpdateDocumentModelDto } from './dto/update-document-model.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+
 @Controller('document-model')
 export class DocumentModelController {
   constructor(private readonly documentModelService: DocumentModelService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file') as NestInterceptor)
   async uploadFile(
     @UploadedFile() file,
     @Body() createDocumentModelDto: CreateDocumentModelDto,
   ) {
-    const document = await this.documentModelService.create(
-      createDocumentModelDto,
-      file,
-    );
-    return document;
+    return await this.documentModelService.create(createDocumentModelDto, file);
   }
 
   @Get()

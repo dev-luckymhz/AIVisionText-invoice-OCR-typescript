@@ -9,6 +9,7 @@ import { User } from './module/users/entities/user.entity';
 import { UserRole } from './module/users/entities/user-role.entity';
 import { DocumentModelModule } from './module/document-model/document-model.module';
 import { DocumentModel } from './module/document-model/entities/document-model.entity';
+import { ExtractedDataModule } from './module/extracted-data/extracted-data.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { DocumentModel } from './module/document-model/entities/document-model.e
     }),
     UsersModule,
     DocumentModelModule,
+    ExtractedDataModule,
   ],
   controllers: [AppController],
   providers: [AppService],
