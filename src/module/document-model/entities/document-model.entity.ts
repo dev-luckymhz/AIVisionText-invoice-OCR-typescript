@@ -6,8 +6,10 @@ import {
   JoinColumn,
   CreateDateColumn,
   BaseEntity,
+  OneToMany, // Import OneToMany
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { ExtractedData } from '../../extracted-data/entities/extracted-datum.entity';
 
 @Entity()
 export class DocumentModel extends BaseEntity {
@@ -32,4 +34,7 @@ export class DocumentModel extends BaseEntity {
   @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @OneToMany(() => ExtractedData, (extractedData) => extractedData.document)
+  extractedData: ExtractedData[]; // Define the relationship with ExtractedData
 }

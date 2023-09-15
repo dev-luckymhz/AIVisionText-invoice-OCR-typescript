@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ExtractedData } from './entities/extracted-datum.entity'; // Import the ExtractedData entity
 import { CreateExtractedDatumDto } from './dto/create-extracted-datum.dto';
 import { UpdateExtractedDatumDto } from './dto/update-extracted-datum.dto';
 
 @Injectable()
 export class ExtractedDataService {
-  create(createExtractedDatumDto: CreateExtractedDatumDto) {
-    return createExtractedDatumDto;
+  constructor(
+    @InjectRepository(ExtractedData)
+    private readonly extractedDataRepository: Repository<ExtractedData>,
+  ) {}
+
+  async create(createExtractedDataDto: CreateExtractedDatumDto) {
+    const extractedData = this.extractedDataRepository.create(
+      createExtractedDataDto,
+    );
+    return await this.extractedDataRepository.save(extractedData);
   }
 
-  findAll() {
-    return `This action returns all extractedData`;
+  async findAll() {
+    return await this.extractedDataRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} extractedDatum`;
+  async findOne(id: number) {
+    const extractedData = await this.extractedDataRepository.findOne({
+      where: { id },
+    });
+    if (!extractedData) {
+      throw new NotFoundException(`ExtractedDatum with id ${id} not found`);
+    }
+    return extractedData;
   }
 
-  update(id: number, updateExtractedDatumDto: UpdateExtractedDatumDto) {
-    return updateExtractedDatumDto;
+  async update(id: number, updateExtractedDataDto: UpdateExtractedDatumDto) {
+    const existingExtractedData = await this.extractedDataRepository.findOne({
+      where: { id },
+    });
+    if (!existingExtractedData) {
+      throw new NotFoundException(`ExtractedDatum with id ${id} not found`);
+    }
+
+    // Update the extracted data entity with the values from the DTO
+    this.extractedDataRepository.merge(
+      existingExtractedData,
+      updateExtractedDataDto,
+    );
+
+    return await this.extractedDataRepository.save(existingExtractedData);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} extractedDatum`;
+  async remove(id: number) {
+    const extractedData = await this.extractedDataRepository.findOne({
+      where: { id },
+    });
+    if (!extractedData) {
+      throw new NotFoundException(`ExtractedDatum with id ${id} not found`);
+    }
+
+    await this.extractedDataRepository.remove(extractedData);
+    return `ExtractedDatum with id ${id} has been removed`;
   }
 }
