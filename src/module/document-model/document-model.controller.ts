@@ -56,16 +56,19 @@ export class DocumentModelController {
     return await this.documentModelService.create(createDocumentModelDto, file);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.documentModelService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.documentModelService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -74,11 +77,13 @@ export class DocumentModelController {
     return this.documentModelService.update(+id, updateDocumentModelDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.documentModelService.remove(+id);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
     const fileStream = await this.documentModelService.getDocumentFile(+id);
