@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from './users.service';
 import { LoginUserDto } from '../dto/login-user.dto';
@@ -12,10 +12,10 @@ export class AuthService {
   ) {}
 
   async validateUser(loginUserDto: LoginUserDto) {
-    const { username, password } = loginUserDto;
+    const { email, password } = loginUserDto;
 
     // Find the user by username
-    const user = await this.userService.findByUsername(username);
+    const user = await this.userService.findByEmail(email);
 
     if (user) {
       // Use bcrypt to compare the provided password with the hashed password in the database
@@ -33,11 +33,13 @@ export class AuthService {
     const payload = {
       sub: user.id,
       username: user.username,
-      role: user.role, // Include the user's role in the payload
+      role: user?.role, // Include the user's role in the payload
     };
 
     // Generate and sign a JWT token with the payload
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+    });
   }
 
   async getAuthenticatedUser(userId: number) {

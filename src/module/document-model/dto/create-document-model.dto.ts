@@ -15,5 +15,5 @@ export class CreateDocumentModelDto {
 
   @IsNotEmpty()
   @IsInt()
-  userId: number;
+  userId?: number;
 }

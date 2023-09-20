@@ -6,6 +6,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express'; // Import the Response object
 import { UserService } from '../service/users.service';
@@ -13,6 +14,7 @@ import { AuthService } from '../service/auth.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
+import { AuthGuard } from '../guard/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -54,6 +56,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('authenticated-user')
   async getAuthenticatedUser(@Req() request: Request) {
     try {
@@ -64,6 +67,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Post('change-password')
   async changePassword(
     @Req() request: Request,
