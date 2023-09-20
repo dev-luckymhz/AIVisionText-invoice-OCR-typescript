@@ -47,7 +47,11 @@ export class AuthController {
       const token = await this.authService.generateToken(user);
 
       // Set the JWT token as a cookie in the response
-      response.cookie('token', token, { httpOnly: true, sameSite: 'strict' });
+      response.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: 2 * 60 * 60 * 1000,
+      });
 
       // You can customize the response if login is successful
       return { message: 'Login successful', user };
