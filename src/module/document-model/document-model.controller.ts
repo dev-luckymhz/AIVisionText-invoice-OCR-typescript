@@ -85,7 +85,6 @@ export class DocumentModelController {
     const contentType = this.documentModelService.getContentTypeFromExtension(
       fileStream.path.toString(),
     );
-    console.log(contentType);
     res.setHeader('Content-Type', contentType); // Adjust the content type as needed
     fileStream.pipe(res);
   }
