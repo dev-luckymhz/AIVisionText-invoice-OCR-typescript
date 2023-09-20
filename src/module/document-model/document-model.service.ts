@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class DocumentModelService {
@@ -23,16 +24,17 @@ export class DocumentModelService {
     file: any,
   ): Promise<DocumentModel> {
     try {
-      const { originalname, buffer } = file;
-
       const document = new DocumentModel();
-      document.fileName = originalname;
-      document.fileType = createDocumentModelDto.fileType;
-      document.documentUrl = path.join(__dirname, 'uploads', originalname);
-
-      // Save the file to the server
-      fs.writeFileSync(document.documentUrl, buffer);
-
+      document.fileName = file.filename;
+      document.fileType = file.mimetype;
+      document.documentUrl = file.path;
+      document.user = createDocumentModelDto.userId
+        ? await User.findOne({
+            where: { id: createDocumentModelDto.userId },
+          })
+        : null;
+      document.uploadDate = new Date();
+      console.log(document);
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document');
@@ -98,5 +100,22 @@ export class DocumentModelService {
     }
 
     return fileStream;
+  }
+
+  getContentTypeFromExtension(filePath: string): string {
+    // Use the 'path' module to extract the file extension
+    const fileExtension = path.extname(filePath).toLowerCase();
+
+    // Map file extensions to content types (customize as needed)
+    const contentTypeMap: { [key: string]: string } = {
+      '.pdf': 'application/pdf',
+      '.jpg': 'image/jpeg',
+      '.png': 'image/png',
+      '.txt': 'text/plain',
+      // Add more file extensions and content types as needed
+    };
+
+    // Lookup the content type based on the file extension or default to 'application/octet-stream'
+    return contentTypeMap[fileExtension] || 'application/octet-stream';
   }
 }
