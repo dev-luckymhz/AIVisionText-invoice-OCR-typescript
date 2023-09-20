@@ -112,7 +112,10 @@ export class DocumentModelService {
       '.jpg': 'image/jpeg',
       '.png': 'image/png',
       '.txt': 'text/plain',
-      // Add more file extensions and content types as needed
+      '.docx':
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      '.pptx':
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     };
 
     // Lookup the content type based on the file extension or default to 'application/octet-stream'
