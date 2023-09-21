@@ -34,10 +34,9 @@ export class DocumentModelService {
           })
         : null;
       document.uploadDate = new Date();
-      console.log(document);
       return await this.documentModelRepository.save(document);
     } catch (error) {
-      throw new BadRequestException('Failed to upload the document');
+      throw new BadRequestException('Failed to upload the document : ' + error);
     }
   }
 
@@ -110,6 +109,7 @@ export class DocumentModelService {
     const contentTypeMap: { [key: string]: string } = {
       '.pdf': 'application/pdf',
       '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
       '.png': 'image/png',
       '.txt': 'text/plain',
       '.docx':

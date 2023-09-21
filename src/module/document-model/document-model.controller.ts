@@ -20,6 +20,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '../users/guard/auth.guard';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { ocrSpace } from 'ocr-space-api-wrapper';
 
 @Controller('document-model')
 export class DocumentModelController {
@@ -53,6 +54,8 @@ export class DocumentModelController {
     @Req() request: Request,
   ) {
     createDocumentModelDto.userId = request['user'].sub;
+    createDocumentModelDto.fileContent = ocrSpace(file.path)?.ParsedResults[0]
+      .ParsedText;
     return await this.documentModelService.create(createDocumentModelDto, file);
   }
 

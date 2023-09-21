@@ -13,6 +13,9 @@ export class CreateDocumentModelDto {
   @IsString()
   documentUrl: string;
 
+  @IsString()
+  fileContent: string;
+
   @IsNotEmpty()
   @IsInt()
   userId?: number;
