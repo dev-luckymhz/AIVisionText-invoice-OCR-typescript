@@ -59,7 +59,7 @@ export class DocumentModelController {
       apiKey: 'K85468754788957',
     });
 
-    createDocumentModelDto.fileContent = orcRequest.ParsedResults[0].ParsedText;
+    createDocumentModelDto.fileContent = orcRequest.ParsedResults[0]?.ParsedText;
 
     console.log(createDocumentModelDto);
 

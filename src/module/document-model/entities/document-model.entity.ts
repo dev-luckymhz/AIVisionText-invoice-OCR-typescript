@@ -25,6 +25,9 @@ export class DocumentModel extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   fileType: string;
 
+  @Column({ type: 'text', nullable: true })
+  fileContent: string; // Change the type to 'text' or 'varchar' depending on your needs
+
   @CreateDateColumn()
   uploadDate: Date;
 
