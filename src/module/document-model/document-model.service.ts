@@ -34,6 +34,7 @@ export class DocumentModelService {
           })
         : null;
       document.uploadDate = new Date();
+      document.fileContent = createDocumentModelDto.fileContent;
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document : ' + error);
