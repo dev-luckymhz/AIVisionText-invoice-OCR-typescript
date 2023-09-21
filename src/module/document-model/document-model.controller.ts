@@ -54,8 +54,15 @@ export class DocumentModelController {
     @Req() request: Request,
   ) {
     createDocumentModelDto.userId = request['user'].sub;
-    createDocumentModelDto.fileContent = ocrSpace(file.path)?.ParsedResults[0]
-      .ParsedText;
+
+    const orcRequest = await ocrSpace(file.path, {
+      apiKey: 'K85468754788957',
+    });
+
+    createDocumentModelDto.fileContent = orcRequest.ParsedResults[0].ParsedText;
+
+    console.log(createDocumentModelDto);
+
     return await this.documentModelService.create(createDocumentModelDto, file);
   }
 
