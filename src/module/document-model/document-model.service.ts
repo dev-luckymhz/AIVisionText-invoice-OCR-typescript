@@ -11,12 +11,14 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../users/entities/user.entity';
+import { DataCleaningService } from './data-cleaning.service';
 
 @Injectable()
 export class DocumentModelService {
   constructor(
     @InjectRepository(DocumentModel)
     private readonly documentModelRepository: Repository<DocumentModel>,
+    private readonly DataCleaningService: DataCleaningService,
   ) {}
 
   async create(
@@ -34,7 +36,10 @@ export class DocumentModelService {
           })
         : null;
       document.uploadDate = new Date();
-      document.fileContent = createDocumentModelDto.fileContent;
+      document.fileContent =
+        this.DataCleaningService.replaceLineBreaksAndWhitespace(
+          createDocumentModelDto.fileContent,
+        );
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document : ' + error);
@@ -106,7 +111,7 @@ export class DocumentModelService {
     // Use the 'path' module to extract the file extension
     const fileExtension = path.extname(filePath).toLowerCase();
 
-    // Map file extensions to content types (customize as needed)
+    // Map file extensions to content types
     const contentTypeMap: { [key: string]: string } = {
       '.pdf': 'application/pdf',
       '.jpg': 'image/jpeg',

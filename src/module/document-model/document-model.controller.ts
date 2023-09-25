@@ -62,8 +62,6 @@ export class DocumentModelController {
     createDocumentModelDto.fileContent =
       orcRequest.ParsedResults[0]?.ParsedText;
 
-    console.log(createDocumentModelDto);
-
     return await this.documentModelService.create(createDocumentModelDto, file);
   }
 
@@ -101,7 +99,7 @@ export class DocumentModelController {
     const contentType = this.documentModelService.getContentTypeFromExtension(
       fileStream.path.toString(),
     );
-    res.setHeader('Content-Type', contentType); // Adjust the content type as needed
+    res.setHeader('Content-Type', contentType);
     fileStream.pipe(res);
   }
 }
