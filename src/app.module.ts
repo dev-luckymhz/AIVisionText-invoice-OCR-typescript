@@ -13,6 +13,7 @@ import { ExtractedDataModule } from './module/extracted-data/extracted-data.modu
 import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum.entity';
 import { DocumentCategoryModule } from './module/document-category/document-category.module';
 import { DocumentCategory } from './module/document-category/entities/document-category.entity';
+import { DocumentMetadataModule } from './module/document-metadata/document-metadata.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { DocumentCategory } from './module/document-category/entities/document-c
     DocumentModelModule,
     ExtractedDataModule,
     DocumentCategoryModule,
+    DocumentMetadataModule,
   ],
   controllers: [AppController],
   providers: [AppService],
