@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { ExtractedDatum } from '../../extracted-data/entities/extracted-datum.entity';
+import { Category } from '../../document-category/entities/document-category.entity';
 
 @Entity()
 export class DocumentModel extends BaseEntity {
@@ -37,6 +38,9 @@ export class DocumentModel extends BaseEntity {
   @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @ManyToOne(() => Category, (category) => category.document)
+  category: Category; // Define the many-to-one relationship
 
   @OneToMany(
     () => ExtractedDatum,

@@ -13,6 +13,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user-role.entity';
 import { DocumentModel } from '../../document-model/entities/document-model.entity';
+import { Category } from "../../document-category/entities/document-category.entity";
 
 // Import any other related entities or decorators here
 
@@ -43,6 +44,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => DocumentModel, (document) => document.user)
   documents: DocumentModel[];
+
+  @OneToMany(() => Category, (category) => category.user)
+  categories: Category[]; // Define the one-to-many relationship
 
   // @OneToMany(() => Notification, (notification) => notification.user)
   // notifications: Notification[];

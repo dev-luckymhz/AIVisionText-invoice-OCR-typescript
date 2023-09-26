@@ -11,6 +11,8 @@ import { DocumentModelModule } from './module/document-model/document-model.modu
 import { DocumentModel } from './module/document-model/entities/document-model.entity';
 import { ExtractedDataModule } from './module/extracted-data/extracted-data.module';
 import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum.entity';
+import { DocumentCategoryModule } from './module/document-category/document-category.module';
+import { Category } from './module/document-category/entities/document-category.entity';
 
 @Module({
   imports: [
@@ -26,12 +28,13 @@ import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, UserRole, DocumentModel, ExtractedDatum],
+      entities: [User, UserRole, DocumentModel, ExtractedDatum, Category],
       synchronize: true,
     }),
     UsersModule,
     DocumentModelModule,
     ExtractedDataModule,
+    DocumentCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
