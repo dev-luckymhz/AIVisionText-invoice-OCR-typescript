@@ -4,10 +4,10 @@ import { DocumentCategoryController } from './document-category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocumentModel } from '../document-model/entities/document-model.entity';
 import { User } from '../users/entities/user.entity';
-import { Category } from './entities/document-category.entity';
+import { CategoryDocument } from './entities/document-category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DocumentModel, User, Category])],
+  imports: [TypeOrmModule.forFeature([DocumentModel, User, CategoryDocument])],
   controllers: [DocumentCategoryController],
   providers: [DocumentCategoryService],
 })

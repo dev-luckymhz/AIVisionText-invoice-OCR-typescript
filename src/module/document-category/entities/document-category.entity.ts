@@ -13,7 +13,7 @@ import { User } from '../../users/entities/user.entity';
 import { DocumentModel } from '../../document-model/entities/document-model.entity';
 
 @Entity()
-export class Category extends BaseEntity {
+export class CategoryDocument extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

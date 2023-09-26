@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Category } from './entities/document-category.entity';
+import { CategoryDocument } from './entities/document-category.entity';
 
 @Injectable()
 export class DocumentCategoryService {
   constructor(
-    @InjectRepository(Category)
-    private categoryRepository: Repository<Category>,
+    @InjectRepository(CategoryDocument)
+    private categoryRepository: Repository<CategoryDocument>,
   ) {}
 
   async createCategory(
     userId: number,
-    categoryData: Partial<Category>,
-  ): Promise<Category> {
+    categoryData: Partial<CategoryDocument>,
+  ): Promise<CategoryDocument> {
     const category = this.categoryRepository.create({
       ...categoryData,
       user: { id: userId }, // Associate the category with the user
@@ -21,7 +21,7 @@ export class DocumentCategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async getCategoryById(id: number): Promise<Category> {
+  async getCategoryById(id: number): Promise<CategoryDocument> {
     const category = await this.categoryRepository.findOne({
       where: { id },
     });
@@ -33,8 +33,8 @@ export class DocumentCategoryService {
 
   async updateCategory(
     id: number,
-    categoryData: Partial<Category>,
-  ): Promise<Category> {
+    categoryData: Partial<CategoryDocument>,
+  ): Promise<CategoryDocument> {
     const category = await this.getCategoryById(id);
     this.categoryRepository.merge(category, categoryData);
     return this.categoryRepository.save(category);
@@ -45,7 +45,7 @@ export class DocumentCategoryService {
     await this.categoryRepository.remove(category);
   }
 
-  async getAllCategories(userId: number): Promise<Category[]> {
+  async getAllCategories(userId: number): Promise<CategoryDocument[]> {
     return this.categoryRepository.find({ where: { user: { id: userId } } });
   }
 }
