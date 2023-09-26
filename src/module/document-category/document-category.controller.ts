@@ -10,7 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { DocumentCategoryService } from './document-category.service';
-import { CategoryDocument } from './entities/document-category.entity';
+import { DocumentCategory } from './entities/document-category.entity';
 import { CreateCategoryDto } from './dto/create-document-category.dto';
 import { UpdateCategoryDto } from './dto/update-document-category.dto';
 import { AuthGuard } from '../users/guard/auth.guard';
@@ -24,14 +24,14 @@ export class DocumentCategoryController {
 
   @UseGuards(AuthGuard)
   @Get()
-  async getAllCategories(@Req() request: Request): Promise<CategoryDocument[]> {
+  async getAllCategories(@Req() request: Request): Promise<DocumentCategory[]> {
     const id = request['user'].sub;
     return this.documentCategoryService.getAllCategories(+id);
   }
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async getCategoryById(@Param('id') id: number): Promise<CategoryDocument> {
+  async getCategoryById(@Param('id') id: number): Promise<DocumentCategory> {
     return this.documentCategoryService.getCategoryById(+id);
   }
 
@@ -40,7 +40,7 @@ export class DocumentCategoryController {
   async createCategory(
     @Body() createCategoryDto: CreateCategoryDto,
     @Req() request: Request,
-  ): Promise<CategoryDocument> {
+  ): Promise<DocumentCategory> {
     const id = request['user'].sub;
     return this.documentCategoryService.createCategory(+id, createCategoryDto);
   }
@@ -50,7 +50,7 @@ export class DocumentCategoryController {
   async updateCategory(
     @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
-  ): Promise<CategoryDocument> {
+  ): Promise<DocumentCategory> {
     return this.documentCategoryService.updateCategory(+id, updateCategoryDto);
   }
 

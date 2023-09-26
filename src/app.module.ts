@@ -12,7 +12,7 @@ import { DocumentModel } from './module/document-model/entities/document-model.e
 import { ExtractedDataModule } from './module/extracted-data/extracted-data.module';
 import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum.entity';
 import { DocumentCategoryModule } from './module/document-category/document-category.module';
-import { CategoryDocument } from './module/document-category/entities/document-category.entity';
+import { DocumentCategory } from './module/document-category/entities/document-category.entity';
 
 @Module({
   imports: [
@@ -28,7 +28,13 @@ import { CategoryDocument } from './module/document-category/entities/document-c
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, UserRole, DocumentModel, ExtractedDatum, CategoryDocument],
+      entities: [
+        User,
+        UserRole,
+        DocumentModel,
+        ExtractedDatum,
+        DocumentCategory,
+      ],
       synchronize: true,
     }),
     UsersModule,

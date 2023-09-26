@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CategoryDocument } from './entities/document-category.entity';
+import { DocumentCategory } from './entities/document-category.entity';
 
 @Injectable()
 export class DocumentCategoryService {
   constructor(
-    @InjectRepository(CategoryDocument)
-    private categoryRepository: Repository<CategoryDocument>,
+    @InjectRepository(DocumentCategory)
+    private categoryRepository: Repository<DocumentCategory>,
   ) {}
 
   async createCategory(
     userId: number,
-    categoryData: Partial<CategoryDocument>,
-  ): Promise<CategoryDocument> {
+    categoryData: Partial<DocumentCategory>,
+  ): Promise<DocumentCategory> {
     const category = this.categoryRepository.create({
       ...categoryData,
       user: { id: userId }, // Associate the category with the user
@@ -21,7 +21,7 @@ export class DocumentCategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async getCategoryById(id: number): Promise<CategoryDocument> {
+  async getCategoryById(id: number): Promise<DocumentCategory> {
     const category = await this.categoryRepository.findOne({
       where: { id },
     });
@@ -33,8 +33,8 @@ export class DocumentCategoryService {
 
   async updateCategory(
     id: number,
-    categoryData: Partial<CategoryDocument>,
-  ): Promise<CategoryDocument> {
+    categoryData: Partial<DocumentCategory>,
+  ): Promise<DocumentCategory> {
     const category = await this.getCategoryById(id);
     this.categoryRepository.merge(category, categoryData);
     return this.categoryRepository.save(category);
@@ -45,7 +45,7 @@ export class DocumentCategoryService {
     await this.categoryRepository.remove(category);
   }
 
-  async getAllCategories(userId: number): Promise<CategoryDocument[]> {
+  async getAllCategories(userId: number): Promise<DocumentCategory[]> {
     return this.categoryRepository.find({ where: { user: { id: userId } } });
   }
 }

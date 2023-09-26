@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { ExtractedDatum } from '../../extracted-data/entities/extracted-datum.entity';
-import { CategoryDocument } from '../../document-category/entities/document-category.entity';
+import { DocumentCategory } from '../../document-category/entities/document-category.entity';
 
 @Entity()
 export class DocumentModel extends BaseEntity {
@@ -39,8 +39,8 @@ export class DocumentModel extends BaseEntity {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => CategoryDocument, (category) => category.document)
-  category: CategoryDocument; // Define the many-to-one relationship
+  @ManyToOne(() => DocumentCategory, (category) => category.document)
+  category: DocumentCategory; // Define the many-to-one relationship
 
   @OneToMany(
     () => ExtractedDatum,
