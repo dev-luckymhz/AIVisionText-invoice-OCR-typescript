@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDocumentMetadatumDto } from './dto/create-document-metadatum.dto';
 import { UpdateDocumentMetadatumDto } from './dto/update-document-metadatum.dto';
 import { InjectRepository } from '@nestjs/typeorm';
