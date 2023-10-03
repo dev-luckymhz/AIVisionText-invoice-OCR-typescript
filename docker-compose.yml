@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    environment:
+      HOST: '0.0.0.0'
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3309
+      DB_USER: admin-user
+      DB_PASSWORD: admin
+      DB_DATABASE: aivisiontext_db
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_HOSTS: localhost
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aivisiontext_db
+      MYSQL_USER: admin-user
+      MYSQL_PASSWORD: admin
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - '3309:3309'

@@ -13,7 +13,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserRole } from './user-role.entity';
 import { DocumentModel } from '../../document-model/entities/document-model.entity';
-import { DocumentCategory } from "../../document-category/entities/document-category.entity";
+import { DocumentCategory } from '../../document-category/entities/document-category.entity';
 
 // Import any other related entities or decorators here
 

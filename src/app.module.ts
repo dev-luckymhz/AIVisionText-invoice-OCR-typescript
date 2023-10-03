@@ -14,6 +14,7 @@ import { ExtractedDatum } from './module/extracted-data/entities/extracted-datum
 import { DocumentCategoryModule } from './module/document-category/document-category.module';
 import { DocumentCategory } from './module/document-category/entities/document-category.entity';
 import { DocumentMetadataModule } from './module/document-metadata/document-metadata.module';
+import { DocumentMetadatum } from './module/document-metadata/entities/document-metadatum.entity';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DocumentMetadataModule } from './module/document-metadata/document-meta
         DocumentModel,
         ExtractedDatum,
         DocumentCategory,
+        DocumentMetadatum,
       ],
       synchronize: true,
     }),

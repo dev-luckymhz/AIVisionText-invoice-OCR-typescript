@@ -11,6 +11,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { ExtractedDatum } from '../../extracted-data/entities/extracted-datum.entity';
 import { DocumentCategory } from '../../document-category/entities/document-category.entity';
+import { DocumentMetadatum } from '../../document-metadata/entities/document-metadatum.entity';
 
 @Entity()
 export class DocumentModel extends BaseEntity {
@@ -27,7 +28,7 @@ export class DocumentModel extends BaseEntity {
   fileType: string;
 
   @Column({ type: 'text', nullable: true })
-  fileContent: string; // Change the type to 'text' or 'varchar' depending on your needs
+  fileContent: string;
 
   @CreateDateColumn()
   uploadDate: Date;
@@ -47,4 +48,7 @@ export class DocumentModel extends BaseEntity {
     (extractedData) => extractedData.documentModel,
   )
   extractedData: ExtractedDatum[]; // Define the relationship with ExtractedData
+
+  @OneToMany(() => DocumentMetadatum, (metadata) => metadata.document)
+  metadata: DocumentMetadatum[]; // Define the one-to-many relationship
 }
