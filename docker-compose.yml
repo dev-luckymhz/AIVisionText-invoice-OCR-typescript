@@ -21,11 +21,10 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_HOSTS: localhost
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: aivisiontext_db
       MYSQL_USER: admin-user
       MYSQL_PASSWORD: admin
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     ports:
-      - '3309:3309'
+      - '3309:3306'
