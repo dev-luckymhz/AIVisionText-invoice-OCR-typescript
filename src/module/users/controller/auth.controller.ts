@@ -100,4 +100,16 @@ export class AuthController {
       throw new UnauthorizedException(error.message);
     }
   }
+
+  @UseGuards(AuthGuard)
+  @Post('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    try {
+      res.clearCookie('token');
+      // Send a response indicating successful logout
+      res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'An error occurred while logging out' });
+    }
+  }
 }

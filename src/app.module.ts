@@ -15,6 +15,8 @@ import { DocumentCategoryModule } from './module/document-category/document-cate
 import { DocumentCategory } from './module/document-category/entities/document-category.entity';
 import { DocumentMetadataModule } from './module/document-metadata/document-metadata.module';
 import { DocumentMetadatum } from './module/document-metadata/entities/document-metadatum.entity';
+import { LogementModule } from './module/logement/logement.module';
+import { AppartementModule } from './module/appartement/appartement.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { DocumentMetadatum } from './module/document-metadata/entities/document-
     ExtractedDataModule,
     DocumentCategoryModule,
     DocumentMetadataModule,
+    LogementModule,
+    AppartementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
