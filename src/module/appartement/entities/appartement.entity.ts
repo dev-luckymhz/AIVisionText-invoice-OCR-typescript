@@ -8,7 +8,7 @@ import {
 import { Logement } from '../../logement/entities/logement.entity';
 
 @Entity()
-export class Appartement extends BaseEntity {
+export class Apartment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

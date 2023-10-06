@@ -5,7 +5,7 @@ import {
   OneToMany,
   BaseEntity,
 } from 'typeorm';
-import { Appartement } from '../../appartement/entities/appartement.entity';
+import { Apartment } from '../../appartement/entities/appartement.entity';
 
 @Entity()
 export class Logement extends BaseEntity {
@@ -33,6 +33,6 @@ export class Logement extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   maintenanceContact: string; // Contact information for property maintenance
 
-  @OneToMany(() => Appartement, (appartement) => appartement.property)
-  appartements: Appartement[]; // Establish a one-to-many relationship with Appartement
+  @OneToMany(() => Apartment, (appartement) => appartement.property)
+  appartements: Apartment[]; // Establish a one-to-many relationship with Appartement
 }

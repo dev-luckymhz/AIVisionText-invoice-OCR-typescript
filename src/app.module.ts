@@ -17,6 +17,8 @@ import { DocumentMetadataModule } from './module/document-metadata/document-meta
 import { DocumentMetadatum } from './module/document-metadata/entities/document-metadatum.entity';
 import { LogementModule } from './module/logement/logement.module';
 import { AppartementModule } from './module/appartement/appartement.module';
+import { Apartment } from './module/appartement/entities/appartement.entity';
+import { Logement } from './module/logement/entities/logement.entity';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { AppartementModule } from './module/appartement/appartement.module';
         ExtractedDatum,
         DocumentCategory,
         DocumentMetadatum,
+        Apartment,
+        Logement,
       ],
       synchronize: true,
     }),
