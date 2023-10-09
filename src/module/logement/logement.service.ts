@@ -1,26 +1,51 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like, FindManyOptions } from 'typeorm';
 import { CreateLogementDto } from './dto/create-logement.dto';
 import { UpdateLogementDto } from './dto/update-logement.dto';
+import { Logement } from './entities/logement.entity';
 
 @Injectable()
 export class LogementService {
-  create(createLogementDto: CreateLogementDto) {
-    return 'This action adds a new logement';
+  constructor(
+    @InjectRepository(Logement)
+    private readonly logementRepository: Repository<Logement>,
+  ) {}
+
+  async create(createLogementDto: CreateLogementDto): Promise<Logement> {
+    const logement = this.logementRepository.create(createLogementDto);
+    return await this.logementRepository.save(logement);
   }
 
-  findAll() {
-    return `This action returns all logement`;
+  async findAll(
+    keyword: string,
+    page: number,
+    take: number,
+  ): Promise<Logement[]> {
+    const options: FindManyOptions<Logement> = {
+      where: keyword
+        ? [{ name: Like(`%${keyword}%`) }, { type: Like(`%${keyword}%`) }]
+        : {},
+      skip: (page - 1) * take,
+      take,
+    };
+
+    return await this.logementRepository.find(options);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} logement`;
+  async findOne(id: number): Promise<Logement> {
+    return await this.logementRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updateLogementDto: UpdateLogementDto) {
-    return `This action updates a #${id} logement`;
+  async update(
+    id: number,
+    updateLogementDto: UpdateLogementDto,
+  ): Promise<Logement> {
+    await this.logementRepository.update(id, updateLogementDto);
+    return await this.logementRepository.findOne({ where: { id: id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} logement`;
+  async remove(id: number): Promise<void> {
+    await this.logementRepository.delete(id);
   }
 }

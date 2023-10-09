@@ -1,4 +1,5 @@
+// update.dto.ts
 import { PartialType } from '@nestjs/swagger';
-import { CreateAppartementDto } from './create-appartement.dto';
+import { CreateApartmentDto } from './create-appartement.dto';
 
-export class UpdateAppartementDto extends PartialType(CreateAppartementDto) {}
+export class UpdateApartmentDto extends PartialType(CreateApartmentDto) {}

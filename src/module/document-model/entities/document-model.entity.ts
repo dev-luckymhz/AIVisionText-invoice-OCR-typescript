@@ -36,7 +36,10 @@ export class DocumentModel extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   documentUrl: string;
 
-  @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.documents, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn({ name: 'userId' })
   user: User;
 

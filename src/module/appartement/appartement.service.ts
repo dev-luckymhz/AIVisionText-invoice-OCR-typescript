@@ -1,26 +1,54 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAppartementDto } from './dto/create-appartement.dto';
-import { UpdateAppartementDto } from './dto/update-appartement.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like, FindManyOptions } from 'typeorm';
+import { CreateApartmentDto } from './dto/create-appartement.dto';
+import { UpdateApartmentDto } from './dto/update-appartement.dto';
+import { Apartment } from './entities/appartement.entity';
 
 @Injectable()
 export class AppartementService {
-  create(createAppartementDto: CreateAppartementDto) {
-    return 'This action adds a new appartement';
+  constructor(
+    @InjectRepository(Apartment)
+    private readonly apartmentRepository: Repository<Apartment>,
+  ) {}
+
+  async create(createAppartementDto: CreateApartmentDto): Promise<Apartment> {
+    const apartment = this.apartmentRepository.create(createAppartementDto);
+    return await this.apartmentRepository.save(apartment);
   }
 
-  findAll() {
-    return `This action returns all appartement`;
+  async findAll(
+    keyword: string,
+    page: number,
+    take: number,
+  ): Promise<Apartment[]> {
+    const options: FindManyOptions<Apartment> = {
+      where: keyword
+        ? [
+            { unitNumber: Like(`%${keyword}%`) },
+            { description: Like(`%${keyword}%`) },
+          ]
+        : {},
+      skip: (page - 1) * take,
+      take,
+    };
+
+    return await this.apartmentRepository.find(options);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} appartement`;
+  async findOne(id: number): Promise<Apartment> {
+    return await this.apartmentRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updateAppartementDto: UpdateAppartementDto) {
-    return `This action updates a #${id} appartement`;
+  async update(
+    id: number,
+    updateAppartementDto: UpdateApartmentDto,
+  ): Promise<Apartment> {
+    await this.apartmentRepository.update(id, updateAppartementDto);
+    return await this.apartmentRepository.findOne({ where: { id: id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} appartement`;
+  async remove(id: number): Promise<void> {
+    await this.apartmentRepository.delete(id);
   }
 }

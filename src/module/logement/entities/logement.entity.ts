@@ -4,8 +4,10 @@ import {
   Column,
   OneToMany,
   BaseEntity,
-} from 'typeorm';
+  ManyToOne, JoinColumn
+} from "typeorm";
 import { Apartment } from '../../appartement/entities/appartement.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Logement extends BaseEntity {
@@ -35,4 +37,8 @@ export class Logement extends BaseEntity {
 
   @OneToMany(() => Apartment, (appartement) => appartement.property)
   appartements: Apartment[]; // Establish a one-to-many relationship with Appartement
+
+  @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }

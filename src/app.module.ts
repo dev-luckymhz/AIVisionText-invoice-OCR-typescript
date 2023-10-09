@@ -19,6 +19,7 @@ import { LogementModule } from './module/logement/logement.module';
 import { AppartementModule } from './module/appartement/appartement.module';
 import { Apartment } from './module/appartement/entities/appartement.entity';
 import { Logement } from './module/logement/entities/logement.entity';
+import { AuditModule } from './module/audit/audit.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { Logement } from './module/logement/entities/logement.entity';
     DocumentMetadataModule,
     LogementModule,
     AppartementModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],
