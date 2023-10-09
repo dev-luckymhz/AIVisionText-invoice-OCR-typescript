@@ -27,11 +27,14 @@ export class DocumentModel extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   fileType: string;
 
-  @Column({ type: 'text', nullable: true })
-  fileContent: string;
-
   @CreateDateColumn()
   uploadDate: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  name: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   documentUrl: string;

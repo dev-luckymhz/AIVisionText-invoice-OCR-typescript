@@ -42,6 +42,8 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.6.1",
+    "nest-keycloak-connect": "^1.9.2",
+    "nextcloud-node-client": "^1.8.1",
     "ocr-space-api-wrapper": "^2.3.0",
     "pdf-parse": "^1.1.1",
     "plotly.js": "^2.26.0",

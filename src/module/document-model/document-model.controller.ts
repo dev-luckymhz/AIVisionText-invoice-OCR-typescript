@@ -20,7 +20,13 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '../users/guard/auth.guard';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ocrSpace } from 'ocr-space-api-wrapper';
+// import { ocrSpace } from 'ocr-space-api-wrapper';
+import {
+  CommandResultMetaData,
+  SourceTargetFileNames,
+  UploadFilesCommand,
+} from 'nextcloud-node-client';
+import { createNextClient } from '../next-cloud/next-cloud.service';
 
 @Controller('document-model')
 export class DocumentModelController {
@@ -31,7 +37,6 @@ export class DocumentModelController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads',
         filename(req, file, callback) {
           // Split the string by the dot character and slice off the last part
           const parts = file.originalname.split('.');
@@ -54,15 +59,40 @@ export class DocumentModelController {
     @Req() request: Request,
   ) {
     createDocumentModelDto.userId = request['user'].sub;
+    const client = createNextClient();
+    // const orcRequest = await ocrSpace(file.path, {
+    //   apiKey: 'K85468754788957',
+    // });
 
-    const orcRequest = await ocrSpace(file.path, {
-      apiKey: 'K85468754788957',
-    });
+    const files: SourceTargetFileNames[] = [
+      {
+        sourceFileName: file.path, // Use the local file path
+        targetFileName: `/cil-file-nextcloud-folder/document/${file.filename}`, // Provide the desired path on Nextcloud
+      },
+    ];
 
-    createDocumentModelDto.fileContent =
-      orcRequest.ParsedResults[0]?.ParsedText;
+    // Create the command object
+    const uc: UploadFilesCommand = new UploadFilesCommand(client, { files });
 
-    return await this.documentModelService.create(createDocumentModelDto, file);
+    try {
+      // Start the upload synchronously
+      await uc.execute();
+      const uploadResult: CommandResultMetaData = uc.getResultMetaData();
+      console.log(uploadResult);
+      file.path = `/cil-file-nextcloud-folder/document/${file.filename}`;
+      // createDocumentModelDto.fileContent =
+      //   orcRequest.ParsedResults[0]?.ParsedText;
+      return await this.documentModelService.create(
+        createDocumentModelDto,
+        file,
+      );
+    } catch (error) {
+      console.error(error);
+
+      // Handle any exceptions that occur during the upload process.
+      // You can return an error response or handle the error as needed.
+      return 'An error occurred while uploading the file to Nextcloud.';
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -96,10 +126,11 @@ export class DocumentModelController {
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
     const fileStream = await this.documentModelService.getDocumentFile(+id);
-    const contentType = this.documentModelService.getContentTypeFromExtension(
-      fileStream.path.toString(),
-    );
-    res.setHeader('Content-Type', contentType);
-    fileStream.pipe(res);
+    // const contentType = this.documentModelService.getContentTypeFromExtension(
+    //   fileStream.path.toString(),
+    // );
+    // res.setHeader('Content-Type', contentType);
+    // fileStream.pipe(res);
+    return fileStream.getContent();
   }
 }

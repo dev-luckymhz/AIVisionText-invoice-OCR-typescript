@@ -10,8 +10,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Readable } from 'stream';
 import { User } from '../users/entities/user.entity';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DataCleaningService } from './data-cleaning.service';
+import { createNextClient } from '../next-cloud/next-cloud.service';
 
 @Injectable()
 export class DocumentModelService {
@@ -36,14 +39,20 @@ export class DocumentModelService {
           })
         : null;
       document.uploadDate = new Date();
-      document.fileContent =
-        this.DataCleaningService.replaceLineBreaksAndWhitespace(
-          createDocumentModelDto.fileContent,
-        );
+      document.name = createDocumentModelDto.name;
+      document.description = createDocumentModelDto.description;
+      // document.fileContent =
+      //   this.DataCleaningService.replaceLineBreaksAndWhitespace(
+      //     createDocumentModelDto.fileContent,
+      //   );
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document : ' + error);
     }
+  }
+
+  async getFileContent(fileContent: string) {
+    this.DataCleaningService.replaceLineBreaksAndWhitespace(fileContent);
   }
 
   async findAll(): Promise<DocumentModel[]> {
@@ -92,19 +101,32 @@ export class DocumentModelService {
   }
 
   async getDocumentFile(id: number): Promise<fs.ReadStream> {
-    const document = await this.documentModelRepository.findOne({
-      where: { id },
-    });
-    if (!document) {
-      throw new NotFoundException(`Document with ID ${id} not found`);
-    }
+    try {
+      const client = createNextClient();
+      const document = await this.documentModelRepository.findOne({
+        where: { id },
+      });
+      if (!document) {
+        throw new NotFoundException(`Document with ID ${id} not found`);
+      }
 
-    const fileStream = fs.createReadStream(document.documentUrl);
-    if (!fileStream) {
-      throw new NotFoundException('File not found');
-    }
+      const file = await client.getFile(document.documentUrl);
 
-    return fileStream;
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+
+      const buffer = await file.getContent(); // Get the file content as a buffer
+      const fileStream = new Readable();
+      fileStream.push(buffer);
+      fileStream.push(null); // Mark the end of the stream
+
+      return fileStream;
+    } catch (error) {
+      // Handle any exceptions that may occur during the process
+      console.error(error);
+      throw new Error('An error occurred while fetching the document');
+    }
   }
 
   getContentTypeFromExtension(filePath: string): string {

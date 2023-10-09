@@ -13,6 +13,13 @@ export class CreateDocumentModelDto {
   @IsString()
   documentUrl: string;
 
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsString()
+  description: string;
+
   @IsString()
   fileContent: string;
 
