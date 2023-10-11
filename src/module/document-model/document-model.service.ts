@@ -10,7 +10,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Readable } from 'stream';
 import { User } from '../users/entities/user.entity';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DataCleaningService } from './data-cleaning.service';
@@ -33,6 +32,7 @@ export class DocumentModelService {
       document.fileName = file.filename;
       document.fileType = file.mimetype;
       document.documentUrl = file.path;
+      document.documentUrlNextCloud = `/cil-file-nextcloud-folder/document/${file.filename}`;
       document.user = createDocumentModelDto.userId
         ? await User.findOne({
             where: { id: createDocumentModelDto.userId },
@@ -41,10 +41,10 @@ export class DocumentModelService {
       document.uploadDate = new Date();
       document.name = createDocumentModelDto.name;
       document.description = createDocumentModelDto.description;
-      // document.fileContent =
-      //   this.DataCleaningService.replaceLineBreaksAndWhitespace(
-      //     createDocumentModelDto.fileContent,
-      //   );
+      /*      document.fileContent =
+        this.DataCleaningService.replaceLineBreaksAndWhitespace(
+          createDocumentModelDto.fileContent,
+        ); */
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document : ' + error);
@@ -94,13 +94,17 @@ export class DocumentModelService {
       throw new NotFoundException(`Document with ID ${id} not found`);
     }
 
+    const client = createNextClient();
     // Delete the file from the server
     fs.unlinkSync(document.documentUrl);
+
+    const file = await client.getFile(document.documentUrlNextCloud);
+    await file.delete();
 
     await this.documentModelRepository.remove(document);
   }
 
-  async getDocumentFile(id: number): Promise<fs.ReadStream> {
+  /*  async getDocumentFile(id: number): Promise<fs.ReadStream> {
     try {
       const client = createNextClient();
       const document = await this.documentModelRepository.findOne({
@@ -111,15 +115,15 @@ export class DocumentModelService {
       }
 
       const file = await client.getFile(document.documentUrl);
-
       if (!file) {
         throw new NotFoundException('File not found');
       }
-
-      const buffer = await file.getContent(); // Get the file content as a buffer
-      const fileStream = new Readable();
-      fileStream.push(buffer);
-      fileStream.push(null); // Mark the end of the stream
+      const url = file.getUrl(); // Get the file content as a buffer
+      const fileStream = fs.createReadStream(url);
+      console.log(url);
+      if (!fileStream) {
+        throw new NotFoundException('File not found');
+      }
 
       return fileStream;
     } catch (error) {
@@ -127,6 +131,22 @@ export class DocumentModelService {
       console.error(error);
       throw new Error('An error occurred while fetching the document');
     }
+  } */
+
+  async getDocumentFile(id: number): Promise<fs.ReadStream> {
+    const document = await this.documentModelRepository.findOne({
+      where: { id },
+    });
+    if (!document) {
+      throw new NotFoundException(`Document with ID ${id} not found`);
+    }
+
+    const fileStream = fs.createReadStream(document.documentUrl);
+    if (!fileStream) {
+      throw new NotFoundException('File not found');
+    }
+
+    return fileStream;
   }
 
   getContentTypeFromExtension(filePath: string): string {

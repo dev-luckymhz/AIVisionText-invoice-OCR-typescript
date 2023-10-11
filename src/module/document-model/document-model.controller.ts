@@ -37,6 +37,7 @@ export class DocumentModelController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
+        destination: './uploads/document',
         filename(req, file, callback) {
           // Split the string by the dot character and slice off the last part
           const parts = file.originalname.split('.');
@@ -79,7 +80,6 @@ export class DocumentModelController {
       await uc.execute();
       const uploadResult: CommandResultMetaData = uc.getResultMetaData();
       console.log(uploadResult);
-      file.path = `/cil-file-nextcloud-folder/document/${file.filename}`;
       // createDocumentModelDto.fileContent =
       //   orcRequest.ParsedResults[0]?.ParsedText;
       return await this.documentModelService.create(
@@ -126,11 +126,10 @@ export class DocumentModelController {
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
     const fileStream = await this.documentModelService.getDocumentFile(+id);
-    // const contentType = this.documentModelService.getContentTypeFromExtension(
-    //   fileStream.path.toString(),
-    // );
-    // res.setHeader('Content-Type', contentType);
-    // fileStream.pipe(res);
-    return fileStream.getContent();
+    const contentType = this.documentModelService.getContentTypeFromExtension(
+      fileStream.path.toString(),
+    );
+    res.setHeader('Content-Type', contentType);
+    fileStream.pipe(res);
   }
 }
