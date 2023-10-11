@@ -41,10 +41,9 @@ export class DocumentModelService {
       document.uploadDate = new Date();
       document.name = createDocumentModelDto.name;
       document.description = createDocumentModelDto.description;
-      /*      document.fileContent =
-        this.DataCleaningService.replaceLineBreaksAndWhitespace(
-          createDocumentModelDto.fileContent,
-        ); */
+      /*      const fileContent = this.DataCleaningService.replaceLineBreaks(
+        createDocumentModelDto.fileContent,
+      );*/
       return await this.documentModelRepository.save(document);
     } catch (error) {
       throw new BadRequestException('Failed to upload the document : ' + error);
@@ -52,7 +51,7 @@ export class DocumentModelService {
   }
 
   async getFileContent(fileContent: string) {
-    this.DataCleaningService.replaceLineBreaksAndWhitespace(fileContent);
+    this.DataCleaningService.replaceLineBreaks(fileContent);
   }
 
   async findAll(): Promise<DocumentModel[]> {

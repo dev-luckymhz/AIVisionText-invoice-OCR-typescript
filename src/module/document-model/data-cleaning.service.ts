@@ -17,7 +17,7 @@ export class DataCleaningService {
     return inputString.replace(/[^a-zA-Z0-9]/g, '');
   }
 
-  replaceLineBreaksAndWhitespace(inputString: string) {
+  replaceLineBreaks(inputString: string) {
     // Replace line breaks and white spaces with semicolons
     return inputString.replace(/\s+/g, ';');
   }
