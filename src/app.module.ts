@@ -20,6 +20,7 @@ import { AppartementModule } from './module/appartement/appartement.module';
 import { Apartment } from './module/appartement/entities/appartement.entity';
 import { Logement } from './module/logement/entities/logement.entity';
 import { AuditModule } from './module/audit/audit.module';
+import { AuditEntity } from "./module/audit/entities/audit.entity";
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AuditModule } from './module/audit/audit.module';
         DocumentMetadatum,
         Apartment,
         Logement,
+        AuditEntity,
       ],
       synchronize: true,
     }),

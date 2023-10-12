@@ -28,7 +28,7 @@ import {
 } from 'nextcloud-node-client';
 import { createNextClient } from '../next-cloud/next-cloud.service';
 
-@Controller('document-model')
+@Controller('documents')
 export class DocumentModelController {
   constructor(private readonly documentModelService: DocumentModelService) {}
 

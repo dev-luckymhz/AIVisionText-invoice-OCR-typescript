@@ -24,12 +24,15 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
+  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
       const user = await this.userService.create(createUserDto);
-      // You can customize the response if registration is successful
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userInfo } = user;
-      return { message: 'Registration successful', userInfo };
+      return res
+        .status(202)
+        .send({ message: 'Registration successful', userInfo });
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
@@ -53,9 +56,9 @@ export class AuthController {
         sameSite: 'strict',
         maxAge: 2 * 60 * 60 * 1000,
       });
-
+      delete user.password;
       // You can customize the response if login is successful
-      return { message: 'Login successful', user };
+      return response.status(202).send({ message: 'Login successful', user });
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
@@ -78,6 +81,7 @@ export class AuthController {
     @Req() request: Request,
     @Body('oldPassword') oldPassword: string,
     @Body('newPassword') newPassword: string,
+    @Res() response: Response,
   ) {
     try {
       const userId = request['user'].sub; // Extract user ID from the JWT payload
@@ -96,7 +100,9 @@ export class AuthController {
       // Hash and update the new password
       await this.authService.changePassword(userId, newPassword);
 
-      return { message: 'Password changed successfully' };
+      return response
+        .status(202)
+        .send({ message: 'Password changed successfully' });
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
