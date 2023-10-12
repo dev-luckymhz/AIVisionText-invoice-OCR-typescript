@@ -28,7 +28,8 @@ export class AuthController {
     try {
       const user = await this.userService.create(createUserDto);
       // You can customize the response if registration is successful
-      return { message: 'Registration successful', user };
+      const { password, ...userInfo } = user;
+      return { message: 'Registration successful', userInfo };
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
