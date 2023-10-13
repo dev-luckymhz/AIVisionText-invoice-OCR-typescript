@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, FindManyOptions } from 'typeorm';
+import { Repository, Like, FindManyOptions, Brackets } from 'typeorm';
 import { CreateApartmentDto } from './dto/create-appartement.dto';
 import { UpdateApartmentDto } from './dto/update-appartement.dto';
 import { Apartment } from './entities/appartement.entity';
@@ -21,19 +21,27 @@ export class AppartementService {
     keyword: string,
     page: number,
     take: number,
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC',
   ): Promise<Apartment[]> {
-    const options: FindManyOptions<Apartment> = {
-      where: keyword
-        ? [
-            { unitNumber: Like(`%${keyword}%`) },
-            { description: Like(`%${keyword}%`) },
-          ]
-        : {},
-      skip: (page - 1) * take,
-      take,
-    };
+    const skip = (page - 1) * take;
 
-    return await this.apartmentRepository.find(options);
+    const query = this.apartmentRepository
+      .createQueryBuilder('apartment')
+      .where(
+        new Brackets((qb) => {
+          qb.where('apartment.unitNumber LIKE :keyword', {
+            keyword: `%${keyword}%`,
+          }).orWhere('apartment.description LIKE :keyword', {
+            keyword: `%${keyword}%`,
+          });
+        }),
+      )
+      .orderBy(`apartment.${sortBy}`, sortOrder)
+      .skip(skip)
+      .take(take);
+
+    return await query.getMany();
   }
 
   async findOne(id: number): Promise<Apartment> {

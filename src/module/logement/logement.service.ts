@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, FindManyOptions } from 'typeorm';
+import { Repository, Like, FindManyOptions, Brackets } from 'typeorm';
 import { CreateLogementDto } from './dto/create-logement.dto';
 import { UpdateLogementDto } from './dto/update-logement.dto';
 import { Logement } from './entities/logement.entity';
@@ -21,16 +21,39 @@ export class LogementService {
     keyword: string,
     page: number,
     take: number,
-  ): Promise<Logement[]> {
-    const options: FindManyOptions<Logement> = {
-      where: keyword
-        ? [{ name: Like(`%${keyword}%`) }, { type: Like(`%${keyword}%`) }]
-        : {},
-      skip: (page - 1) * take,
-      take,
-    };
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC',
+  ): Promise<{
+    logements: Logement[];
+    currentPage: number;
+    perPage: number;
+    total: number;
+  }> {
+    const skip = (page - 1) * take;
 
-    return await this.logementRepository.find(options);
+    const query = this.logementRepository
+      .createQueryBuilder('logement')
+      .where(
+        new Brackets((qb) => {
+          qb.where('logement.name LIKE :keyword', {
+            keyword: `%${keyword}%`,
+          }).orWhere('logement.type LIKE :keyword', {
+            keyword: `%${keyword}%`,
+          });
+        }),
+      )
+      .orderBy(`logement.${sortBy}`, sortOrder)
+      .skip(skip)
+      .take(take);
+
+    const [logements, totalCount] = await query.getManyAndCount();
+
+    return {
+      logements,
+      currentPage: page,
+      perPage: take,
+      total: totalCount,
+    };
   }
 
   async findOne(id: number): Promise<Logement> {

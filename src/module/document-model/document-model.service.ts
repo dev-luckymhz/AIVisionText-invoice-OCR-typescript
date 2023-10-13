@@ -54,8 +54,71 @@ export class DocumentModelService {
     this.DataCleaningService.replaceLineBreaks(fileContent);
   }
 
-  async findAll(): Promise<DocumentModel[]> {
-    return await this.documentModelRepository.find();
+  async findAll(
+    keyword: string,
+    page: number,
+    take: number,
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to ascending order
+  ): Promise<{
+    documents: DocumentModel[];
+    currentPage: number;
+    perPage: number;
+    total: number;
+  }> {
+    const skip = (page - 1) * take;
+
+    let query = this.documentModelRepository
+      .createQueryBuilder('documentModel')
+      .leftJoinAndSelect('documentModel.user', 'user')
+      .leftJoinAndSelect('documentModel.category', 'category');
+
+    // Handle sorting based on the 'sortBy' and 'sortOrder' parameters
+    switch (sortBy) {
+      case 'name':
+        query = query.addOrderBy('documentModel.name', sortOrder);
+        break;
+      case 'fileName':
+        query = query.addOrderBy('documentModel.fileName', sortOrder);
+        break;
+      case 'fileType':
+        query = query.addOrderBy('documentModel.fileType', sortOrder);
+        break;
+      case 'documentUrl':
+        query = query.addOrderBy('documentModel.documentUrl', sortOrder);
+        break;
+      default:
+        // Sort by 'id' by default
+        query = query.addOrderBy('documentModel.id', sortOrder);
+    }
+
+    if (keyword) {
+      query = query
+        .where('documentModel.fileName LIKE :keyword', {
+          keyword: `%${keyword}%`,
+        })
+        .orWhere('documentModel.fileType LIKE :keyword', {
+          keyword: `%${keyword}%`,
+        })
+        .orWhere('documentModel.name LIKE :keyword', {
+          keyword: `%${keyword}%`,
+        })
+        .orWhere('documentModel.description LIKE :keyword', {
+          keyword: `%${keyword}%`,
+        });
+    }
+
+    const [documents, totalCount] = await query
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
+
+    return {
+      documents,
+      currentPage: page,
+      perPage: take,
+      total: totalCount,
+    };
   }
 
   async findOne(id: number): Promise<DocumentModel> {

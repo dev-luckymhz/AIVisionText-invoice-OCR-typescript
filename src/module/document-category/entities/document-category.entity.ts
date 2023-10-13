@@ -8,6 +8,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { DocumentModel } from '../../document-model/entities/document-model.entity';
@@ -23,8 +24,8 @@ export class DocumentCategory extends BaseEntity {
   @ManyToOne(() => User, (user) => user.categories, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => DocumentModel, (document) => document.category)
-  document: DocumentModel; // Define the many-to-one relationship
+  @OneToMany(() => DocumentModel, (document) => document.category)
+  document: DocumentModel[]; // Define the many-to-one relationship
 
   @Column({ type: 'text', nullable: true })
   description: string;

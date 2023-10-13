@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UploadedFile,
@@ -27,6 +28,7 @@ import {
   UploadFilesCommand,
 } from 'nextcloud-node-client';
 import { createNextClient } from '../next-cloud/next-cloud.service';
+import { DocumentModel } from './entities/document-model.entity';
 
 @Controller('documents')
 export class DocumentModelController {
@@ -97,8 +99,25 @@ export class DocumentModelController {
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.documentModelService.findAll();
+  findAll(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number = 1,
+    @Query('take') take: number = 10,
+    @Query('sortBy') sortBy: string = 'id', // Default to sorting by 'id'
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to ascending order
+  ): Promise<{
+    documents: DocumentModel[];
+    currentPage: number;
+    perPage: number;
+    total: number;
+  }> {
+    return this.documentModelService.findAll(
+      keyword,
+      page,
+      take,
+      sortBy,
+      sortOrder,
+    );
   }
 
   @UseGuards(AuthGuard)

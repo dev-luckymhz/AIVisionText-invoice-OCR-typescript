@@ -11,6 +11,7 @@ import {
 import { AppartementService } from './appartement.service';
 import { CreateApartmentDto } from './dto/create-appartement.dto';
 import { UpdateApartmentDto } from './dto/update-appartement.dto';
+import { Apartment } from './entities/appartement.entity';
 
 @Controller('appartement')
 export class AppartementController {
@@ -22,12 +23,20 @@ export class AppartementController {
   }
 
   @Get()
-  findAll(
-    @Query('keyword') keyword: string, // Add keyword query parameter
-    @Query('page') page: number = 1, // Add page query parameter with a default value of 1
-    @Query('take') take: number = 10, // Add take query parameter with a default value of 10
-  ) {
-    return this.appartementService.findAll(keyword, page, take);
+  async findAll(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number = 1,
+    @Query('take') take: number = 10,
+    @Query('sortBy') sortBy: string = 'id',
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to ascending order
+  ): Promise<Apartment[]> {
+    return this.appartementService.findAll(
+      keyword,
+      page,
+      take,
+      sortBy,
+      sortOrder,
+    );
   }
 
   @Get(':id')

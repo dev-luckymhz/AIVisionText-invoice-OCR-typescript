@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { LogementService } from './logement.service';
 import { CreateLogementDto } from './dto/create-logement.dto';
 import { UpdateLogementDto } from './dto/update-logement.dto';
@@ -14,11 +23,13 @@ export class LogementController {
 
   @Get()
   findAll(
-    @Query('keyword') keyword: string, // Add keyword query parameter
-    @Query('page') page: number = 1, // Add page query parameter with a default value of 1
-    @Query('take') take: number = 10, // Add take query parameter with a default value of 10
+    @Query('keyword') keyword: string,
+    @Query('page') page: number = 1,
+    @Query('take') take: number = 10,
+    @Query('sortBy') sortBy: string = 'id', // Default to 'id'
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to 'ASC'
   ) {
-    return this.logementService.findAll(keyword, page, take);
+    return this.logementService.findAll(keyword, page, take, sortBy, sortOrder);
   }
 
   @Get(':id')
@@ -27,7 +38,10 @@ export class LogementController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLogementDto: UpdateLogementDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateLogementDto: UpdateLogementDto,
+  ) {
     return this.logementService.update(+id, updateLogementDto);
   }
 
