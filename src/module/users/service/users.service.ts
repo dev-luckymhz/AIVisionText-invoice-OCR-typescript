@@ -1,13 +1,13 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { User } from '../entities/user.entity'; // Import your User entity
 import { CreateUserDto } from '../dto/create-user.dto'; // Import User DTOs
-import { UpdateUserDto } from '../dto/update-user.dto'; // Import User DTOs
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -16,9 +16,32 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll(
+    keyword = '',
+    page: number,
+    take: number,
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC',
+  ): Promise<User[]> {
     try {
-      return await this.userRepository.find();
+      const skip = (page - 1) * take;
+
+      const query = this.userRepository
+        .createQueryBuilder('users')
+        .where(
+          new Brackets((qb) => {
+            qb.where('users.username LIKE :username', {
+              username: `%${keyword}%`,
+            });
+            qb.orWhere('users.email LIKE :email', { email: `%${keyword}%` });
+          }),
+        )
+        .leftJoinAndSelect('users.role', 'role')
+        .orderBy(`users.${sortBy}`, sortOrder)
+        .skip(skip)
+        .take(take);
+
+      return await query.getMany();
     } catch (error) {
       throw new Error(`Error fetching users: ${error.message}`);
     }
@@ -26,7 +49,10 @@ export class UserService {
 
   async findById(id: number): Promise<User> {
     try {
-      const user = await this.userRepository.findOne({ where: { id }, relations : ['role'] });
+      const user = await this.userRepository.findOne({
+        where: { id },
+        relations: ['role'],
+      });
       if (!user) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }

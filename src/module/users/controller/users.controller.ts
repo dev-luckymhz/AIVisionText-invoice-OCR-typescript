@@ -10,18 +10,26 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { UserService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create-user.dto'; // Import User DTOs
-import { UpdateUserDto } from '../dto/update-user.dto'; // Import User DTOs
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAll() {
-    return await this.userService.findAll();
+  async findAll(
+    @Query('keyword') keyword: string,
+    @Query('page') page: number = 1,
+    @Query('take') take: number = 10,
+    @Query('sortBy') sortBy: string = 'id',
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to ascending order
+  ): Promise<User[]> {
+    return this.userService.findAll(keyword, page, take, sortBy, sortOrder);
   }
 
   @Get(':id')

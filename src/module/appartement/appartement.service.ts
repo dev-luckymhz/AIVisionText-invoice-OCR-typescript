@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, FindManyOptions, Brackets } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { CreateApartmentDto } from './dto/create-appartement.dto';
 import { UpdateApartmentDto } from './dto/update-appartement.dto';
 import { Apartment } from './entities/appartement.entity';
