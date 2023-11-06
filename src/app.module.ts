@@ -22,6 +22,8 @@ import { Logement } from './module/logement/entities/logement.entity';
 import { AuditModule } from './module/audit/audit.module';
 import { AuditEntity } from './module/audit/entities/audit.entity';
 import { InvoiceModule } from './module/invoice/invoice.module';
+import { Invoice } from './module/invoice/entities/invoice.entity';
+import { Product } from './module/invoice/product/entities/product.entity';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { InvoiceModule } from './module/invoice/invoice.module';
         Apartment,
         Logement,
         AuditEntity,
+        Invoice,
+        Product,
       ],
       synchronize: true,
     }),
