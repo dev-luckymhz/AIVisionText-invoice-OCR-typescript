@@ -15,6 +15,7 @@ import { User } from '../users/entities/user.entity';
 import { DataCleaningService } from './data-cleaning.service';
 import { OpenAI } from 'openai';
 import { DocumentMetadatum } from '../document-metadata/entities/document-metadatum.entity';
+import * as process from 'process';
 @Injectable()
 export class DocumentModelService {
   constructor(
@@ -189,7 +190,7 @@ export class DocumentModelService {
       where: { id },
     });
     const openai = new OpenAI({
-      apiKey: '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',
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
     const chatCompletion = await openai.chat.completions.create({
