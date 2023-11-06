@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -21,14 +24,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '../users/guard/auth.guard';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-// import { ocrSpace } from 'ocr-space-api-wrapper';
-import {
-  CommandResultMetaData,
-  SourceTargetFileNames,
-  UploadFilesCommand,
-} from 'nextcloud-node-client';
-import { createNextClient } from '../next-cloud/next-cloud.service';
-import { DocumentModel } from './entities/document-model.entity';
+import { ocrSpace } from 'ocr-space-api-wrapper';
 
 @Controller('documents')
 export class DocumentModelController {
@@ -62,59 +58,38 @@ export class DocumentModelController {
     @Req() request: Request,
   ) {
     createDocumentModelDto.userId = request['user'].sub;
-    const client = createNextClient();
-    // const orcRequest = await ocrSpace(file.path, {
-    //   apiKey: 'K85468754788957',
-    // });
-
-    const files: SourceTargetFileNames[] = [
-      {
-        sourceFileName: file.path, // Use the local file path
-        targetFileName: `/cil-file-nextcloud-folder/document/${file.filename}`, // Provide the desired path on Nextcloud
-      },
-    ];
-
-    // Create the command object
-    const uc: UploadFilesCommand = new UploadFilesCommand(client, { files });
-
     try {
-      // Start the upload synchronously
-      await uc.execute();
-      const uploadResult: CommandResultMetaData = uc.getResultMetaData();
-      console.log(uploadResult);
-      // createDocumentModelDto.fileContent =
-      //   orcRequest.ParsedResults[0]?.ParsedText;
+      const orcRequest = await ocrSpace(file.path, {
+        apiKey: 'K85468754788957',
+      });
+      createDocumentModelDto.fileContent =
+        orcRequest.ParsedResults[0]?.ParsedText;
       return await this.documentModelService.create(
         createDocumentModelDto,
         file,
       );
     } catch (error) {
       console.error(error);
-
       // Handle any exceptions that occur during the upload process.
       // You can return an error response or handle the error as needed.
-      return 'An error occurred while uploading the file to Nextcloud.';
+      return 'An error occurred while uploading the file.';
     }
   }
 
   @UseGuards(AuthGuard)
   @Get()
-  findAll(
-    @Query('keyword') keyword: string,
-    @Query('page') page: number = 1,
-    @Query('take') take: number = 10,
-    @Query('sortBy') sortBy: string = 'id', // Default to sorting by 'id'
-    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC', // Default to ascending order
-  ): Promise<{
-    documents: DocumentModel[];
-    currentPage: number;
-    perPage: number;
-    total: number;
-  }> {
+  findAll(@Query() query) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'id',
+      sortOrder = 'ASC',
+    } = query;
     return this.documentModelService.findAll(
-      keyword,
+      search,
       page,
-      take,
+      limit,
       sortBy,
       sortOrder,
     );
@@ -124,6 +99,22 @@ export class DocumentModelController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.documentModelService.findOne(+id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':id/extract')
+  async extractOCRData(@Param('id') id: string): Promise<any> {
+    try {
+      const extractedData = await this.documentModelService.extractDataFromOCR(
+        +id,
+      );
+      return { data: extractedData };
+    } catch (error) {
+      throw new HttpException(
+        `Error extracting data: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -144,11 +135,18 @@ export class DocumentModelController {
   @UseGuards(AuthGuard)
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
-    const fileStream = await this.documentModelService.getDocumentFile(+id);
-    const contentType = this.documentModelService.getContentTypeFromExtension(
-      fileStream.path.toString(),
-    );
-    res.setHeader('Content-Type', contentType);
-    fileStream.pipe(res);
+    try {
+      const fileStream = await this.documentModelService.getDocumentFile(+id);
+      const contentType = this.documentModelService.getContentTypeFromExtension(
+        fileStream.path.toString(),
+      );
+      res.setHeader('Content-Type', contentType);
+      fileStream.pipe(res);
+    } catch (error) {
+      // Handle the error as needed, e.g., log it or return an error response.
+      throw new NotFoundException(
+        `Error while downloading file: ${error.message}`,
+      );
+    }
   }
 }

@@ -14,7 +14,10 @@ export class DocumentMetadatum extends BaseEntity {
   id: number;
 
   @Column({ type: 'text', nullable: true })
-  fileContent: string;
+  key: string;
+
+  @Column({ type: 'text', nullable: true })
+  value: string;
 
   @ManyToOne(() => DocumentModel, (document) => document.metadata)
   @JoinColumn({ name: 'documentId' })

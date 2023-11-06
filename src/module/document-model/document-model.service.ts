@@ -13,8 +13,8 @@ import * as path from 'path';
 import { User } from '../users/entities/user.entity';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DataCleaningService } from './data-cleaning.service';
-import { createNextClient } from '../next-cloud/next-cloud.service';
-
+import { OpenAI } from 'openai';
+import { DocumentMetadatum } from '../document-metadata/entities/document-metadatum.entity';
 @Injectable()
 export class DocumentModelService {
   constructor(
@@ -32,7 +32,7 @@ export class DocumentModelService {
       document.fileName = file.filename;
       document.fileType = file.mimetype;
       document.documentUrl = file.path;
-      document.documentUrlNextCloud = `/cil-file-nextcloud-folder/document/${file.filename}`;
+      document.fileContent = createDocumentModelDto.fileContent;
       document.user = createDocumentModelDto.userId
         ? await User.findOne({
             where: { id: createDocumentModelDto.userId },
@@ -155,60 +155,67 @@ export class DocumentModelService {
     if (!document) {
       throw new NotFoundException(`Document with ID ${id} not found`);
     }
-
-    const client = createNextClient();
     // Delete the file from the server
     fs.unlinkSync(document.documentUrl);
-
-    const file = await client.getFile(document.documentUrlNextCloud);
-    await file.delete();
 
     await this.documentModelRepository.remove(document);
   }
 
-  /*  async getDocumentFile(id: number): Promise<fs.ReadStream> {
+  async getDocumentFile(id: number): Promise<fs.ReadStream> {
     try {
-      const client = createNextClient();
       const document = await this.documentModelRepository.findOne({
         where: { id },
       });
+
       if (!document) {
         throw new NotFoundException(`Document with ID ${id} not found`);
       }
 
-      const file = await client.getFile(document.documentUrl);
-      if (!file) {
-        throw new NotFoundException('File not found');
-      }
-      const url = file.getUrl(); // Get the file content as a buffer
-      const fileStream = fs.createReadStream(url);
-      console.log(url);
+      const fileStream = fs.createReadStream(document.documentUrl);
+
       if (!fileStream) {
         throw new NotFoundException('File not found');
       }
 
       return fileStream;
     } catch (error) {
-      // Handle any exceptions that may occur during the process
-      console.error(error);
-      throw new Error('An error occurred while fetching the document');
+      // Handle the error as needed, e.g., log it or return an error response.
+      throw new Error(`Error while retrieving document file: ${error.message}`);
     }
-  } */
+  }
 
-  async getDocumentFile(id: number): Promise<fs.ReadStream> {
+  async extractDataFromOCR(id: number): Promise<string> {
     const document = await this.documentModelRepository.findOne({
       where: { id },
     });
-    if (!document) {
-      throw new NotFoundException(`Document with ID ${id} not found`);
-    }
+    const openai = new OpenAI({
+      apiKey: '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',
+    });
 
-    const fileStream = fs.createReadStream(document.documentUrl);
-    if (!fileStream) {
-      throw new NotFoundException('File not found');
-    }
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: 'user',
+          content: `extract the important data from the ocr scanned file in a json format, give only the json? ${document.fileContent}`,
+        },
+      ],
+      model: 'gpt-3.5-turbo',
+    });
 
-    return fileStream;
+    const extractedData = JSON.parse(chatCompletion.choices[0].message.content);
+
+    // Iterate over the extracted data and save it to DocumentMetadatum
+    for (const key of Object.keys(extractedData)) {
+      const value = extractedData[key];
+
+      const metadata = new DocumentMetadatum();
+      metadata.key = key;
+      metadata.value = JSON.stringify(value);
+      metadata.document = document;
+
+      await metadata.save();
+    }
+    return extractedData;
   }
 
   getContentTypeFromExtension(filePath: string): string {

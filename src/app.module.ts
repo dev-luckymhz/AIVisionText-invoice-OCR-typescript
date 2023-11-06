@@ -20,7 +20,8 @@ import { AppartementModule } from './module/appartement/appartement.module';
 import { Apartment } from './module/appartement/entities/appartement.entity';
 import { Logement } from './module/logement/entities/logement.entity';
 import { AuditModule } from './module/audit/audit.module';
-import { AuditEntity } from "./module/audit/entities/audit.entity";
+import { AuditEntity } from './module/audit/entities/audit.entity';
+import { InvoiceModule } from './module/invoice/invoice.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { AuditEntity } from "./module/audit/entities/audit.entity";
     LogementModule,
     AppartementModule,
     AuditModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
