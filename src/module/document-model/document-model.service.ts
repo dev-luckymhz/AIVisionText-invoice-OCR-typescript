@@ -16,6 +16,7 @@ import { DataCleaningService } from './data-cleaning.service';
 import { OpenAI } from 'openai';
 import { DocumentMetadatum } from '../document-metadata/entities/document-metadatum.entity';
 import * as process from 'process';
+import { DocumentCategory } from '../document-category/entities/document-category.entity';
 @Injectable()
 export class DocumentModelService {
   constructor(
@@ -37,6 +38,11 @@ export class DocumentModelService {
       document.user = createDocumentModelDto.userId
         ? await User.findOne({
             where: { id: createDocumentModelDto.userId },
+          })
+        : null;
+      document.category = createDocumentModelDto.category
+        ? await DocumentCategory.findOne({
+            where: { id: createDocumentModelDto.category },
           })
         : null;
       document.uploadDate = new Date();
@@ -125,6 +131,7 @@ export class DocumentModelService {
   async findOne(id: number): Promise<DocumentModel> {
     const document = await this.documentModelRepository.findOne({
       where: { id },
+      relations: ['category'],
     });
     if (!document) {
       throw new NotFoundException(`Document with ID ${id} not found`);

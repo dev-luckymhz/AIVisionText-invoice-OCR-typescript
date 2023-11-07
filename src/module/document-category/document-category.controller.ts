@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { DocumentCategoryService } from './document-category.service';
 import { DocumentCategory } from './entities/document-category.entity';
@@ -16,17 +17,33 @@ import { UpdateCategoryDto } from './dto/update-document-category.dto';
 import { AuthGuard } from '../users/guard/auth.guard';
 import { Request } from 'express';
 
-@Controller('document-category')
+@Controller('document/category')
 export class DocumentCategoryController {
   constructor(
     private readonly documentCategoryService: DocumentCategoryService,
   ) {}
 
   @UseGuards(AuthGuard)
-  @Get()
-  async getAllCategories(@Req() request: Request): Promise<DocumentCategory[]> {
+  @Get('/user')
+  async getAllUserCategories(
+    @Req() request: Request,
+  ): Promise<DocumentCategory[]> {
     const id = request['user'].sub;
-    return this.documentCategoryService.getAllCategories(+id);
+    return this.documentCategoryService.getAllUserCategories(+id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get()
+  async getAllCategories(): Promise<DocumentCategory[]> {
+    return this.documentCategoryService.getAllCategories();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('search')
+  async searchCategories(
+    @Query('name') name: string,
+  ): Promise<{ id: number; name: string }[]> {
+    return this.documentCategoryService.searchCategoriesByName(name);
   }
 
   @UseGuards(AuthGuard)

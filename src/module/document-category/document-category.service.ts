@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { DocumentCategory } from './entities/document-category.entity';
 
 @Injectable()
@@ -31,6 +31,18 @@ export class DocumentCategoryService {
     return category;
   }
 
+  async searchCategoriesByName(
+    name = '',
+  ): Promise<{ id: number; name: string }[]> {
+    return this.categoryRepository.find({
+      where: {
+        name: Like(`%${name}%`),
+      },
+      take: 5,
+      select: ['id', 'name'] as (keyof DocumentCategory)[],
+    });
+  }
+
   async updateCategory(
     id: number,
     categoryData: Partial<DocumentCategory>,
@@ -45,7 +57,11 @@ export class DocumentCategoryService {
     await this.categoryRepository.remove(category);
   }
 
-  async getAllCategories(userId: number): Promise<DocumentCategory[]> {
+  async getAllUserCategories(userId: number): Promise<DocumentCategory[]> {
     return this.categoryRepository.find({ where: { user: { id: userId } } });
+  }
+
+  async getAllCategories(): Promise<DocumentCategory[]> {
+    return this.categoryRepository.find();
   }
 }

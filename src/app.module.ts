@@ -24,6 +24,8 @@ import { AuditEntity } from './module/audit/entities/audit.entity';
 import { InvoiceModule } from './module/invoice/invoice.module';
 import { Invoice } from './module/invoice/entities/invoice.entity';
 import { Product } from './module/invoice/product/entities/product.entity';
+import { ContractModule } from './module/contract/contract.module';
+import { Contract } from './module/contract/entities/contract.entity';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { Product } from './module/invoice/product/entities/product.entity';
         AuditEntity,
         Invoice,
         Product,
+        Contract,
       ],
       synchronize: true,
     }),
@@ -63,6 +66,7 @@ import { Product } from './module/invoice/product/entities/product.entity';
     AppartementModule,
     AuditModule,
     InvoiceModule,
+    ContractModule,
   ],
   controllers: [AppController],
   providers: [AppService],

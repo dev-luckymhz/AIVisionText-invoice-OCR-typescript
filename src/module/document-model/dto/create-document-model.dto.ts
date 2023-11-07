@@ -20,6 +20,9 @@ export class CreateDocumentModelDto {
   @IsString()
   description: string;
 
+  @IsInt()
+  category?: number;
+
   @IsString()
   fileContent: string;
 
