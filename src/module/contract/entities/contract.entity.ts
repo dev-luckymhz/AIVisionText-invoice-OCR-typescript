@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Contract {
@@ -22,6 +27,9 @@ export class Contract {
 
   @Column('date')
   startDate: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Column('decimal', { precision: 10, scale: 2 })
   salary: number;

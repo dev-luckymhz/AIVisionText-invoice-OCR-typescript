@@ -42,6 +42,9 @@ export class DocumentModel extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   documentUrl: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
   @ManyToOne(() => User, (user) => user.documents, {
     onDelete: 'CASCADE',
     nullable: true,

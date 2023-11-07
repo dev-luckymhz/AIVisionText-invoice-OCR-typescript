@@ -133,6 +133,18 @@ export class DocumentModelController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('weekly')
+  getWeeklyReport() {
+    return this.documentModelService.getWeeklyReport();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('monthly')
+  getMonthlyReport() {
+    return this.documentModelService.getMonthlyReport();
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
     try {

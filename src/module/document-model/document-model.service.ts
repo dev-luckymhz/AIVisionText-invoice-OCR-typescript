@@ -7,7 +7,7 @@ import { CreateDocumentModelDto } from './dto/create-document-model.dto';
 import { UpdateDocumentModelDto } from './dto/update-document-model.dto';
 import { DocumentModel } from './entities/document-model.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../users/entities/user.entity';
@@ -17,11 +17,15 @@ import { OpenAI } from 'openai';
 import { DocumentMetadatum } from '../document-metadata/entities/document-metadatum.entity';
 import * as process from 'process';
 import { DocumentCategory } from '../document-category/entities/document-category.entity';
+import { Invoice } from '../invoice/entities/invoice.entity';
+import { Contract } from '../contract/entities/contract.entity';
 @Injectable()
 export class DocumentModelService {
   constructor(
     @InjectRepository(DocumentModel)
     private readonly documentModelRepository: Repository<DocumentModel>,
+    private readonly contractRepository: Repository<Contract>,
+    private readonly invoiceRepository: Repository<Invoice>,
     private readonly DataCleaningService: DataCleaningService,
   ) {}
 
@@ -224,6 +228,52 @@ export class DocumentModelService {
       await metadata.save();
     }
     return extractedData;
+  }
+
+  async getWeeklyReport(id?: number): Promise<any> {
+    let userInfo = null;
+    if (id) {
+      userInfo = await User.findOne({
+        where: { id: id },
+      });
+    }
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const contracts = await this.contractRepository.count({
+      where: { createdAt: MoreThan(oneWeekAgo) },
+    });
+    const documents = await this.documentModelRepository.count({
+      where: { createdAt: MoreThan(oneWeekAgo) },
+    });
+    const invoices = await this.invoiceRepository.count({
+      where: { createdAt: MoreThan(oneWeekAgo) },
+    });
+
+    return { userInfo, contracts, documents, invoices };
+  }
+
+  async getMonthlyReport(id?: number): Promise<any> {
+    let userInfo = null;
+    if (id) {
+      userInfo = await User.findOne({
+        where: { id: id },
+      });
+    }
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const contracts = await this.contractRepository.count({
+      where: { createdAt: MoreThan(oneMonthAgo) },
+    });
+    const documents = await this.documentModelRepository.count({
+      where: { createdAt: MoreThan(oneMonthAgo) },
+    });
+    const invoices = await this.invoiceRepository.count({
+      where: { createdAt: MoreThan(oneMonthAgo) },
+    });
+
+    return { userInfo, contracts, documents, invoices };
   }
 
   getContentTypeFromExtension(filePath: string): string {

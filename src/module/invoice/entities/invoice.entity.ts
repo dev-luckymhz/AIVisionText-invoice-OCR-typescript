@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+} from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 
 @Entity()
@@ -20,6 +26,9 @@ export class Invoice {
 
   @Column({ nullable: true })
   additionalDetails: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @OneToMany(() => Product, (product) => product.invoice, { cascade: true })
   products: Product[];
