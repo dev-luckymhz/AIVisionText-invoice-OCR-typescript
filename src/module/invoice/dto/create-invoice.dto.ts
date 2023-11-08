@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsArray, IsEmail, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsArray,
+  IsEmail,
+  ValidateNested,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ProductDTO } from '../product/dto/create-product.dto';
 
@@ -11,6 +17,9 @@ export class InvoiceDTO {
 
   @IsEmail()
   email: string;
+
+  @IsString()
+  InvNo: string;
 
   @IsNotEmpty()
   contactNo: number;

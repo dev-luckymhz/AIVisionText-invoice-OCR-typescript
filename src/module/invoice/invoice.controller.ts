@@ -36,8 +36,8 @@ export class InvoiceController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Invoice> {
-    return this.invoiceService.findOne(id);
+  async findOne(@Param('id') id: number): Promise<Invoice> {
+    return await this.invoiceService.findOne(id);
   }
 
   @Put(':id')

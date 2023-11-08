@@ -24,7 +24,9 @@ export class DocumentModelService {
   constructor(
     @InjectRepository(DocumentModel)
     private readonly documentModelRepository: Repository<DocumentModel>,
+    @InjectRepository(Contract)
     private readonly contractRepository: Repository<Contract>,
+    @InjectRepository(Invoice)
     private readonly invoiceRepository: Repository<Invoice>,
     private readonly DataCleaningService: DataCleaningService,
   ) {}
@@ -141,6 +143,34 @@ export class DocumentModelService {
       throw new NotFoundException(`Document with ID ${id} not found`);
     }
     return document;
+  }
+
+  async getAllCounts(): Promise<{
+    documents: number;
+    contracts: number;
+    invoices: number;
+  }> {
+    try {
+      console.log('here we go');
+      const [documentCount, nbdoc] =
+        await this.documentModelRepository.findAndCount();
+      const [contractCount, nbc] = await this.contractRepository.findAndCount();
+      const [invoiceCount, nbI] = await this.invoiceRepository.findAndCount();
+      const counts = {
+        documents: nbdoc,
+        contracts: nbc,
+        invoices: nbI,
+        documentCount,
+        contractCount,
+        invoiceCount,
+      };
+      console.log(counts);
+      return counts;
+    } catch (error) {
+      // Handle the error appropriately
+      console.error('An error occurred while getting counts:', error);
+      throw new Error('Failed to get counts');
+    }
   }
 
   async update(

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invoice } from './entities/invoice.entity';
@@ -17,6 +17,7 @@ export class InvoiceService {
   async create(invoiceData: InvoiceDTO): Promise<Invoice> {
     const invoice = new Invoice();
 
+    invoice.InvNo = invoiceData.InvNo;
     invoice.customerName = invoiceData.customerName;
     invoice.address = invoiceData.address;
     invoice.email = invoiceData.email;
@@ -40,10 +41,12 @@ export class InvoiceService {
     limit: number = 10,
     sort: string = 'id',
     order: 'ASC' | 'DESC' = 'ASC',
-  ): Promise<[Invoice[], number]> {
+  ): Promise<[any[], number]> {
+    // Change to any[] to include total
     let query: SelectQueryBuilder<Invoice> = this.invoiceRepository
       .createQueryBuilder('invoice')
-      .leftJoinAndSelect('invoice.products', 'product');
+      .leftJoinAndSelect('invoice.products', 'product')
+      .loadRelationCountAndMap('invoice.productCount', 'invoice.products');
 
     if (search) {
       query = query
@@ -56,19 +59,34 @@ export class InvoiceService {
       .take(limit)
       .orderBy(`invoice.${sort}`, order);
 
-    return await query.getManyAndCount();
-  }
+    const [invoices, count] = await query.getManyAndCount();
 
-  async findOne(id: number): Promise<Invoice> {
-    return await this.invoiceRepository.findOne({
-      where: { id: id },
-      relations: ['products'],
+    // Calculate total for each invoice
+    const invoicesWithTotal = invoices.map((invoice) => {
+      const total = invoice.products.reduce((sum, product) => {
+        return sum + parseFloat(product.price.toString()) * product.qty;
+      }, 0);
+      return { ...invoice, total };
     });
+    return [invoicesWithTotal, count];
   }
 
   async update(id: number, invoiceData: InvoiceDTO): Promise<Invoice> {
     await this.invoiceRepository.update(id, invoiceData);
-    return this.findOne(id);
+    return await this.findOne(id);
+  }
+
+  async findOne(id: number): Promise<Invoice> {
+    const invoice = await this.invoiceRepository.findOne({
+      where: { id: id },
+      relations: ['products'],
+    });
+
+    if (!invoice) {
+      throw new NotFoundException(`Invoice with ID ${id} not found.`);
+    }
+
+    return invoice;
   }
 
   async remove(id: number): Promise<void> {

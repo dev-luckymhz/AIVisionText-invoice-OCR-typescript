@@ -145,6 +145,12 @@ export class DocumentModelController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('d')
+  async getDashboard() {
+    return await this.documentModelService.getAllCounts();
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id/download')
   async downloadFile(@Param('id') id: string, @Res() res: Response) {
     try {

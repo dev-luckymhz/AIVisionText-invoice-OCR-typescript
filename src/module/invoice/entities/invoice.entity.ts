@@ -18,6 +18,9 @@ export class Invoice {
   @Column()
   address: string;
 
+  @Column({ nullable: true })
+  InvNo: string;
+
   @Column()
   contactNo: number;
 
@@ -29,6 +32,9 @@ export class Invoice {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'int', default: 0 })
+  productCount: number;
 
   @OneToMany(() => Product, (product) => product.invoice, { cascade: true })
   products: Product[];
