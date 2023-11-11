@@ -3,17 +3,18 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  BaseEntity,
 } from 'typeorm';
 
 @Entity()
-export class Contract {
+export class Contract extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 500 })
+  @Column({ length: 100 })
   employerName: string;
 
-  @Column({ length: 500 })
+  @Column({ length: 100 })
   employeeName: string;
 
   @Column('text')
@@ -22,7 +23,7 @@ export class Contract {
   @Column('date')
   dateOfBirth: Date;
 
-  @Column({ length: 500 })
+  @Column({ length: 100 })
   jobTitle: string;
 
   @Column('date')

@@ -274,7 +274,7 @@ export class DocumentModelService {
       where: { createdAt: MoreThan(oneWeekAgo) },
     });
     const documents = await this.documentModelRepository.count({
-      where: { createdAt: MoreThan(oneWeekAgo) },
+      where: { uploadDate: MoreThan(oneWeekAgo) },
     });
     const invoices = await this.invoiceRepository.count({
       where: { createdAt: MoreThan(oneWeekAgo) },
@@ -297,7 +297,7 @@ export class DocumentModelService {
       where: { createdAt: MoreThan(oneMonthAgo) },
     });
     const documents = await this.documentModelRepository.count({
-      where: { createdAt: MoreThan(oneMonthAgo) },
+      where: { uploadDate: MoreThan(oneMonthAgo) },
     });
     const invoices = await this.invoiceRepository.count({
       where: { createdAt: MoreThan(oneMonthAgo) },
